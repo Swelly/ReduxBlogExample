@@ -1,22 +1,37 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
+import { createPost } from '../actions/index';
+import { Link } from 'react-router';
 
 // Define stateless component to render input and errors
 const renderInput = field =>   
-  <div>
-    <input {...field.input} type={field.type}/>
+  <div className="form-group">
+    <input className="form-control" {...field.input} type={field.type}/>
     {field.meta.touched &&
      field.meta.error &&
      <span className="error">{field.meta.error}</span>}
   </div>
 
-class PostNew extends Component {
-	render() {
+ const renderTextArea = field =>
+ 	<div className="form-group">
+ 		<textarea className="form-control form-control-lg" {...field.input} type={field.type}/>
+ 		{field.meta.touched &&
+	     field.meta.error &&
+	    <span className="error">{field.meta.error}</span>}
+  </div>
 
+class PostNew extends Component {
+	handleFormSubmit(formProps) {
+		this.props.createPost(formProps);
+	}
+
+
+	render() {
 		const { handleSubmit } = this.props;
 
 		return (
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
 				<h3 className="form-title">Create a Post</h3>
 
 				<div className="form-group">
@@ -24,8 +39,7 @@ class PostNew extends Component {
 					<Field
 						name="title"
 						component={renderInput}
-						type="text"
-						className="form-control"/>
+						type="text"/>
 				</div>
 
 				<div className="form-group">
@@ -33,25 +47,42 @@ class PostNew extends Component {
 					<Field
 						name="categories"
 						component={renderInput}
-						type="text"
-						className="form-control"/>
+						type="text"/>
 				</div>
 
 				<div className="form-group">
 					<label htmlFor="content">Content</label>
 					<Field
 						name="content"
-						component="textarea"
-						type="text"
-						className="form-control"/>
+						component={renderTextArea}
+						type="text"/>
 				</div>
 
 				<button type="submit" className="btn btn-primary">Submit</button>
+				<Link to="/" className="btn btn-warning">Cancel</Link>
 			</form>
 		)
 	}
 }
 
-export default reduxForm({
-	form: 'PostNewForm'
-})(PostNew);
+function validate(formProps){
+  const errors = {};
+ 
+  if(!formProps.title){
+    errors.title = 'Please enter a username';
+  }
+  if(!formProps.categories){
+    errors.categories = 'Enter some categories';
+  }
+  if(!formProps.content){
+    errors.content = 'Enter more content';
+  }
+  return errors;
+}
+
+const form = reduxForm({
+  form: 'PostsNewForm',
+  validate
+});
+
+export default connect( null, { createPost })(form(PostNew));
