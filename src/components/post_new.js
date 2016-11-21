@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 import { createPost } from '../actions/index';
@@ -22,8 +22,16 @@ const renderInput = field =>
   </div>
 
 class PostNew extends Component {
+
+	static contextTypes = {
+		router: PropTypes.object
+	}
+
 	handleFormSubmit(formProps) {
-		this.props.createPost(formProps);
+		this.props.createPost(formProps)
+			.then( () => {
+				this.context.router.push('/');
+		});
 	}
 
 

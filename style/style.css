@@ -1,1 +1,12 @@
 form {margin: 50px;}
+
+span.error {
+	color: #b0b0b0;
+	font-style: italic;
+	font-size: 14px;
+	margin-left: 5px;
+}
+
+form a {
+	margin-left: 15px;
+}
